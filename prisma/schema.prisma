@@ -66,6 +66,19 @@ model Experience {
   @@map("experiences")
 }
 
+model Blog {
+  id          Int      @id @default(autoincrement())
+  title       String
+  image       String
+  description String?
+  categories  String[]
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("blogs")
+}
+
 enum UserRole {
   ADMIN
 }
