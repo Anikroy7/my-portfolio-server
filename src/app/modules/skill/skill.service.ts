@@ -1,15 +1,28 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { prisma } from "../../types/global";
-import { Skill } from "@prisma/client";
+import { Skill, Technology } from "@prisma/client";
 ;
 
 
-const createSkillIntoDB = async (payload: Skill) => {
-    const newSkill = await prisma.skill.create({ data: payload });
-    if (!newSkill) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Failed to create Skill");
-    }
+const createSkillIntoDB = async (payload: Technology) => {
+    /*  const newSkill = await prisma.skill.create({ data: payload });
+     if (!newSkill) {
+         throw new AppError(httpStatus.BAD_REQUEST, "Failed to create Skill");
+     } */
+
+    const newSkill = await prisma.$transaction(async (prismaTransication) => {
+        const technology = await prismaTransication.technology.create({
+            data: payload
+        })
+
+        await prismaTransication.skill.create({
+            data: {
+                technologyId: technology.id
+            }
+        })
+        return technology
+    })
     return newSkill;
 };
 const getSkillFromDB = async (_id: string) => {

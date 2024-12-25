@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
@@ -26,7 +26,7 @@ model User {
 }
 
 model Admin {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(uuid())
   email        String   @unique
   name         String
   profileImage String?
@@ -41,19 +41,8 @@ model Admin {
   @@map("admins")
 }
 
-model Skill {
-  id        Int      @id @default(autoincrement())
-  name      String
-  logo      String
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("skills")
-}
-
 model Experience {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   companyName String
   companyLogo String?
   totalYears  String
@@ -67,7 +56,7 @@ model Experience {
 }
 
 model Blog {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   title       String
   image       String
   description String?
@@ -77,6 +66,72 @@ model Blog {
   updatedAt   DateTime @updatedAt
 
   @@map("blogs")
+}
+
+model Technology {
+  id        String   @id @default(uuid())
+  name      String
+  logo      String
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  skill             Skill?
+  projectTechnology ProjectTechnology[]
+
+  @@map("technologies")
+}
+
+model Skill {
+  id           String     @id @default(uuid())
+  isDeleted    Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  technologyId String     @unique
+  technology   Technology @relation(fields: [technologyId], references: [id])
+
+  @@map("skills")
+}
+
+model ProjectTechnology {
+  id           String @id @default(uuid())
+  projectId    String
+  technologyId String
+
+  project    Project    @relation(fields: [projectId], references: [id])
+  technology Technology @relation(fields: [technologyId], references: [id])
+
+  @@map("projectTechnologies")
+}
+
+model ProjectLink {
+  id        String   @id @default(uuid())
+  name      String
+  link      String
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  @@map("projectLinks")
+}
+
+model Project {
+  id                String              @id @default(uuid())
+  name              String
+  images            String[]
+  description       String?
+  categories        String[]
+  isDeleted         Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  projectLink       ProjectLink[]
+  projectTechnology ProjectTechnology[]
+
+  @@map("projects")
 }
 
 enum UserRole {
