@@ -22,7 +22,7 @@ app.use("/api/", router);
 
 app.get('/', (req: Request, res: Response) => {
     res.json({
-        "message": "Welcome to Next Bazaar Server"
+        "message": "Welcome to my portfolio Server"
     })
 })
 

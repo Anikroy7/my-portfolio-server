@@ -26,7 +26,6 @@ const createProjectIntoDB = async (payload: any) => {
 
         // Sequentially create project links
         for (const link of projectLinks || []) {
-            console.log('links', link);
             await prismaTransication.projectLink.create({
                 data: {
                     ...link,

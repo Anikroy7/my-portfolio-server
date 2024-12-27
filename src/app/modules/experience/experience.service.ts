@@ -13,20 +13,20 @@ const createExperienceIntoDB = async (payload: Experience) => {
     return newExperience;
 };
 const getExperienceFromDB = async (_id: string) => {
-    const Experience = await prisma.experience.findUnique({ where: { id: parseInt(_id) } });
+    const Experience = await prisma.experience.findUnique({ where: { id: _id} });
     if (!Experience) {
         throw new AppError(httpStatus.NOT_FOUND, "Can't find the Experience");
     }
     return Experience;
 };
 const updateExperienceIntoDB = async (_id: string, payload: Experience) => {
-    const Experience = await prisma.experience.findUnique({ where: { id: parseInt(_id) } });
+    const Experience = await prisma.experience.findUnique({ where: { id: _id } });
     if (!Experience) {
         throw new AppError(httpStatus.NOT_FOUND, "Can't find the Experience");
     }
     const updatedExperience = await prisma.experience.update({
         where: {
-            id: parseInt(_id)
+            id: _id
         },
         data: payload
     });
@@ -43,15 +43,12 @@ const getAllExperiencesFromDB = async () => {
 };
 const deleteExperienceFromDB = async (_id: string) => {
 
-    const Experience = await prisma.experience.findUnique({ where: { id: parseInt(_id) } });
+    const Experience = await prisma.experience.findUnique({ where: { id: _id } });
     if (!Experience) {
         throw new AppError(httpStatus.NOT_FOUND, "Can't find the Experience");
     }
-    const updatedExperience = await prisma.experience.update({
-        where: { id: parseInt(_id) },
-        data: {
-            isDeleted: true
-        }
+    const updatedExperience = await prisma.experience.delete({
+        where: { id: _id },
     });
     return updatedExperience;
 };
