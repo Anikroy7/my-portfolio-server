@@ -70,31 +70,56 @@ const updateProjectIntoDB = async (_id: string, payload: Project) => {
 
 const getAllProjectsFromDB = async () => {
     const projects = await prisma.project.findMany({
-       include:{
-        projectTechnology: {
-            select:{
-                technology: true
-            }
-        },
-        projectLink: true,
-    
-       }
+        include: {
+            projectTechnology: {
+                select: {
+                    technology: true
+                }
+            },
+            projectLink: true,
+
+        }
     });
     return projects;
 };
 const deleteProjectFromDB = async (_id: string) => {
 
-    const Project = await prisma.project.findUnique({ where: { id: _id } });
-    if (!Project) {
-        throw new AppError(httpStatus.NOT_FOUND, "Can't find the Project");
-    }
-    const updatedProject = await prisma.project.update({
-        where: { id: _id },
-        data: {
-            isDeleted: true
+    const result = await prisma.$transaction(async (transactionClient) => {
+        const Project = await prisma.project.findUnique({
+            where: { id: _id }, include: {
+                projectTechnology: true,
+                projectLink: true,
+
+            }
+        });
+        if (!Project) {
+            throw new AppError(httpStatus.NOT_FOUND, "Can't find the Project");
         }
-    });
-    return updatedProject;
+        for (const link of Project.projectLink || []) {
+            await transactionClient.projectLink.delete({
+                where: {
+                    id: link.id
+                }
+            });
+        }
+        for (const technology of Project.projectTechnology || []) {
+            await transactionClient.projectTechnology.delete({
+                where: {
+                    id: technology.id
+                }
+            });
+            // console.log(technology)
+        }
+
+        const result = await transactionClient.project.delete({
+            where: {
+                id: _id
+            }
+        })
+
+        return result
+    })
+    return result
 };
 export const ProjectServices = {
     createProjectIntoDB,
