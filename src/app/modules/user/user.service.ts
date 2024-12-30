@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from "@prisma/client"
+import { UserRole } from "@prisma/client"
 import bcyrpt from 'bcrypt'
 import { prisma } from "../../types/global";
 import AppError from "../../errors/AppError";
@@ -32,10 +32,7 @@ const getMyInfoFromDB = async (payload: any) => {
     switch (role) {
         case UserRole.ADMIN:
             return await prisma.admin.findUniqueOrThrow({ where: { email: payload.user.email } })
-        case UserRole.CUSTOMER:
-            return await prisma.customer.findUniqueOrThrow({ where: { email: payload.user.email } })
-        case UserRole.VENDOR:
-            return await prisma.vendor.findUniqueOrThrow({ where: { email: payload.user.email } })
+        
         default:
             throw new AppError(httpStatus.BAD_REQUEST, 'User not found');
     }

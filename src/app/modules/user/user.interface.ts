@@ -1,4 +1,3 @@
-import { UserStatus } from "@prisma/client";
 import { USER_ROLE } from "./user.constant";
 
 export type TADMIN = {
@@ -9,7 +8,6 @@ export type TADMIN = {
   profileImage: string;
   address: string;
   role: "ADMIN"
-  status: UserStatus,
   isDeleted: boolean
 };
 

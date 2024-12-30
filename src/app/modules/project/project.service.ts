@@ -8,7 +8,6 @@ import { Project } from "@prisma/client";
 const createProjectIntoDB = async (payload: any) => {
     const { projectLinks, technologies, ...projectData } = payload;
 
-    console.log({ projectLinks, technologies, ...projectData })
 
     const newProject = await prisma.$transaction(async (prismaTransication) => {
         const project = await prismaTransication.project.create({
